@@ -1,0 +1,13 @@
+.idea/
+.venv/
+backups/
+/logs
+.env
+.coverage
+db.sqlite3
+/temp*
+/celerybeat*
+/certs/*
+/staticfiles
+/media
+./grafana_data
