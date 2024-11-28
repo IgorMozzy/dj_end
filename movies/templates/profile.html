@@ -1,0 +1,53 @@
+{% extends "base_m.html" %}
+
+{% block title %}Profile - {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid main-wrapper mt-5">
+<div class="container mt-4">
+    <h2 class="mb-4">{{ profile_user.username }}'s Profile</h2>
+
+    <!-- user info section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Profile Information</h5>
+            <p><strong>Username:</strong> {{ profile_user.username }}</p>
+            <p><strong>Email:</strong> {{ profile_user.email }}</p>
+            <p><strong>Date Joined:</strong> {{ profile_user.date_joined|date:"F j, Y" }}</p>
+        </div>
+    </div>
+
+    <!-- reviews history -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Review History</h5>
+            {% for review in reviews %}
+                <div class="mb-3">
+                    <h6><a href="{% url 'movie_detail' review.movie.id %}">{{ review.movie.title }}</a></h6>
+                    <p>{{ review.text }}</p>
+                    <p class="text-muted">Posted on {{ review.created_at|date:"F j, Y" }}</p>
+                </div>
+            {% empty %}
+                <p>No reviews found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Rates history -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Rating History</h5>
+            {% for rating in ratings %}
+                <div class="mb-3">
+                    <h6><a href="{% url 'movie_detail' rating.movie.id %}">{{ rating.movie.title }}</a></h6>
+                    <p>Rating: {{ rating.value }}/5</p>
+                    <p class="text-muted">Rated on {{ rating.created_at|date:"F j, Y" }}</p>
+                </div>
+            {% empty %}
+                <p>No ratings found.</p>
+            {% endfor %}
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

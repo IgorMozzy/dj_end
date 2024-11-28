@@ -1,0 +1,75 @@
+{% extends "base_m.html" %}
+
+{% block title %}Moderation Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Moderation Dashboard</h2>
+    
+    <!-- user list -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">User Management</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td><a href="{% url 'user_profile' user.id %}">{{ user.username }}</a></td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.is_active %}
+                                    Active
+                                {% else %}
+                                    Inactive
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'toggle_user_status' user.id %}" class="btn btn-sm btn-warning">
+                                    {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- reviews list -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Review Moderation</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Movie</th>
+                        <th>Review</th>
+                        <th>User</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for review in reviews %}
+                        <tr>
+                            <td><a href="{% url 'movie_detail' review.movie.id %}">{{ review.movie.title }}</a></td>
+                            <td>{{ review.text }}</td>
+                            <td>{{ review.user.username }}</td>
+                            <td>
+                                <a href="{% url 'delete_review' review.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

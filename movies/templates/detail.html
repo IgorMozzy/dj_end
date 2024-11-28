@@ -1,0 +1,238 @@
+{% extends "base_m.html" %}
+
+{% block title %}{{ movie.title }} - Movie Details{% endblock %}
+
+{% block content %}
+<div class="container-fluid main-wrapper mt-5">
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                {% if movie.image %}
+                    <img src="{{ movie.image.url }}" class="card-img-top" alt="{{ movie.title }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/300x450?text=No+Image" class="card-img-top" alt="No Image">
+                {% endif %}
+                <div class="card-body text-center">
+                    <p class="text-muted">Poster</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h2>{{ movie.title }}</h2>
+            <p class="text-muted">
+                {% if average_rating %}
+                    Average Rating: {{ average_rating|floatformat:1 }}/5
+                {% else %}
+                    No ratings yet
+                {% endif %}
+            </p>
+
+            <ul class="list-unstyled mb-4">
+                <li><strong>Release Date:</strong> {{ movie.release_date }}</li>
+                <li><strong>Duration:</strong> {{ movie.duration }} min</li>
+                <li><strong>Genres:</strong> {{ movie.genres.all|join:", " }}</li>
+            </ul>
+
+            <p>{{ movie.description }}</p>
+
+            <div class="d-flex mb-4">
+    {% if user.is_authenticated %}
+        <div class="dropdown me-2">
+            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="rateDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if user_rating %}
+                    <i class="bi bi-star-fill"></i> Rated: {{ user_rating }}/5
+                {% else %}
+                    <i class="bi bi-star"></i> Rate
+                {% endif %}
+            </button>
+            <ul class="dropdown-menu p-3" aria-labelledby="rateDropdown" style="min-width: auto;">
+                <div id="starRating" class="d-flex justify-content-center">
+                    {% for i in '12345' %}
+                        <i class="bi {% if user_rating and i <= user_rating %}bi-star-fill{% else %}bi-star{% endif %}" data-value="{{ i }}" style="font-size: 1.5rem; cursor: pointer;"></i>
+                    {% endfor %}
+                </div>
+            </ul>
+        </div>
+        <button class="btn btn-outline-dark me-2" id="favoriteButton">
+            <i class="bi bi-bookmark"></i>
+            {% if is_favorite %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+        </button>
+                <a href="{% url 'write_review' movie.id %}" class="btn btn-outline-dark">Write a Review</a>
+    {% else %}
+        <p class="text-muted">You need to <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to rate or add this movie to favorites.</p>
+    {% endif %}
+</div>
+
+{% if reviews %}
+    <div id="reviewsContainer">
+    <!-- first review -->
+    <div class="review mb-3">
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <p>{{ reviews.0.text|truncatewords:20 }}</p>
+                </div>
+                <div class="text-end">
+                    <p class="text-muted small mb-2">
+                        {{ reviews.0.user.username }} - {{ reviews.0.created_at|date:"M d, Y" }}
+                        {% if reviews.0.updated_at and reviews.0.updated_by %}
+                            <br><span class="text-muted small">Edited by {{ reviews.0.updated_by }} on {{ reviews.0.updated_at|date:"M d, Y" }}</span>
+                        {% endif %}
+                    </p>
+                {% if reviews.0.user == user or is_moderator %}
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'edit_review' movie.id reviews.0.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                        <a href="{% url 'delete_review' reviews.0.id %}" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- more reviews hidden block -->
+    <div id="hiddenReviews" class="d-none">
+        {% for review in reviews|slice:"1:" %}
+            <div class="review mb-3">
+                <div class="card">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <p>{{ review.text|truncatewords:20 }}</p>
+                        </div>
+                        <div class="text-end">
+                            <p class="text-muted small mb-2">
+                                {{ review.user.username }} - {{ review.created_at|date:"M d, Y" }}
+                                {% if review.updated_at and review.updated_by %}
+                                    <br><span class="text-muted small">Edited by {{ review.updated_by }} on {{ review.updated_at|date:"M d, Y" }}</span>
+                                {% endif %}
+                            </p>
+                            {% if review.user == user or is_moderator %}
+                                <div class="d-flex justify-content-end">
+                                <a href="{% url 'edit_review' movie.id review.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                <a href="{% url 'delete_review' review.id %}" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+                    <!-- button to show reviews -->
+                    <button id="toggleReviewsButton" class="btn btn-outline-secondary mt-2">Show more reviews</button>
+                </div>
+            {% else %}
+                <p class="text-muted">No reviews yet.</p>
+            {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- fav-button cliks handling -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $('#favoriteButton').click(function() {
+        $.ajax({
+            url: "{% url 'toggle_favorite' movie.id %}",
+            method: "GET",
+            success: function(response) {
+                if (response.status === 'added') {
+                    $('#favoriteButton').text('Remove from Favorites');
+                } else if (response.status === 'removed') {
+                    $('#favoriteButton').text('Add to Favorites');
+                }
+            }
+        });
+    });
+</script>
+<!-- rate-button cliks handling -->
+<script>
+    $('#rateButton').click(function() {
+        const rating = prompt("Please enter your rating (1-5):");
+        if (rating && rating >= 1 && rating <= 5) {
+            $.ajax({
+                url: "{% url 'rate_movie' movie.id %}",
+                method: "POST",
+                data: {
+                    'rating': rating,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    alert(response.message);
+                },
+                error: function(response) {
+                    alert(response.responseJSON.message);
+                }
+            });
+        } else {
+            alert("Please enter a valid rating between 1 and 5.");
+        }
+    });
+</script>
+<!-- stars -->
+<script>
+    const stars = document.querySelectorAll('#starRating .bi');
+    const rateButton = document.getElementById('rateDropdown');
+    const ratingStatus = document.getElementById('ratingStatus');
+
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => {
+            resetStars();
+            fillStars(star.dataset.value);
+        });
+
+        star.addEventListener('mouseout', resetStars);
+
+        star.addEventListener('click', () => {
+            const rating = star.dataset.value;
+            submitRating(rating);
+        });
+    });
+
+    function resetStars() {
+        stars.forEach(star => star.classList.remove('bi-star-fill'));
+        stars.forEach(star => star.classList.add('bi-star'));
+    }
+
+    function fillStars(rating) {
+        stars.forEach(star => {
+            if (star.dataset.value <= rating) {
+                star.classList.remove('bi-star');
+                star.classList.add('bi-star-fill');
+            }
+        });
+    }
+
+    function submitRating(rating) {
+        fetch("{% url 'rate_movie' movie.id %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ rating: rating })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                rateButton.innerHTML = `Rated: ${rating}/5`;
+                ratingStatus.textContent = `Thank you for rating: ${rating}/5`;
+                resetStars();
+                fillStars(rating);
+            } else {
+                ratingStatus.textContent = `Error: ${data.message}`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            ratingStatus.textContent = "An error occurred while submitting your rating.";
+        });
+    }
+</script>
+{% endblock %}

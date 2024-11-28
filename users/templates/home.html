@@ -1,0 +1,11 @@
+{% extends 'base_m.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h2>Welcome to the Django Admin Dashboard</h2>
+    <p>Please log in or register to continue.</p>
+    <a href="{% url 'register' %}" class="btn btn-primary mt-3">Register</a>
+</div>
+{% endblock %}

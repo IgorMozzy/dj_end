@@ -1,0 +1,22 @@
+{% extends "base_m.html" %}
+
+{% block title %}Write/Edit Review{% endblock %}
+
+{% block content %}
+<div class="container-fluid main-wrapper mt-5">
+    <div class="container mt-4">
+        <h2>{{ created|yesno:"Edit Your Review,Write a Review" }} for {{ movie.title }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.text.label_tag }}
+                {{ form.text }}
+            </div>
+            <button type="submit" class="btn btn-primary">
+                {% if created %}Update Review{% else %}Submit Review{% endif %}
+            </button>
+            <a href="{% url 'movie_detail' movie.id %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

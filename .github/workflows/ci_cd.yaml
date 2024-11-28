@@ -1,0 +1,101 @@
+name: Django Docker CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev # temporary
+  workflow_dispatch:  # manual test from GitHub Actions
+
+jobs:
+  build-in-compose-and-run-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+
+    # Create .env file from .env.sample
+    - name: Create environment file
+      run: cp .env.sample .env
+
+    - name: Build Docker Compose services
+      run: docker compose -f docker-compose.yml up -d --build
+
+    - name: Wait for services to be ready
+      run: sleep 15
+
+    - name: List running containers
+      run: docker compose ps
+
+    - name: Display starting logs for debugging
+      run: docker compose logs
+
+    - name: Run flake8 for syntax check
+      run: docker compose exec web flake8 .
+
+    - name: Run Django tests
+      run: docker compose exec web python manage.py test
+
+    - name: Down Docker Compose services
+      if: always()
+      run: docker compose down
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-in-compose-and-run-test
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Deploy to Ubuntu server via SSH
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            sudo apt-get update -y
+            sudo apt-get install -y curl git
+
+            # Docker setup if it absent
+            if ! [ -x "$(command -v docker)" ]; then
+              curl -fsSL https://get.docker.com -o get-docker.sh
+              sh get-docker.sh
+              sudo usermod -aG docker $USER
+              newgrp docker
+              rm get-docker.sh
+            fi
+
+            # Docker Compose check/setup
+            if ! [ -x "$(command -v docker-compose)" ]; then
+              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            REPO_URL="git@github.com:IgorMozzy/dj_end.git"
+            REPO_NAME=$(basename -s .git "$REPO_URL")
+            REPO_BRANCH="dev"
+
+            # Clone or update repo from GitHub
+            if [ -d "/home/$USER/$REPO_NAME" ]; then
+              echo "Directory exists. Pulling latest changes..."
+              cd "/home/$USER/$REPO_NAME" || { echo "Failed to change directory"; exit 1; }
+              git pull origin $REPO_BRANCH || { echo "Failed to pull latest changes"; exit 1; }
+            else
+              echo "Directory does not exist. Cloning repository..."
+              git clone -b $REPO_BRANCH "$REPO_URL" "/home/$USER/$REPO_NAME" || { echo "Failed to clone repository"; exit 1; }
+              cd "/home/$USER/$REPO_NAME" || { echo "Failed to change directory after cloning"; exit 1; }
+            fi
+            
+            # Check if .env file or copy it from .env.sample
+            if [ ! -f .env ]; then
+              echo ".env file does not exist. Creating from .env.sample..."
+              cp .env.sample .env || { echo "Failed to create .env from .env.sample"; exit 1; }
+            fi
+
+            # WE ARE ABOUT TO START!
+            docker compose down
+            docker compose up -d --build
