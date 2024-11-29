@@ -5,34 +5,39 @@
 {% block content %}
     <!-- Slider -->
 <div id="highlightCarousel" class="carousel slide mb-5" data-bs-ride="carousel"
-     style="width: 80%; max-width: 900px; margin: auto; display: block; border: solid; border-radius: 15px; border-width: 15px; border-color: white;">
-        <div class="carousel-inner">
+     style="width: 80%; max-width: 900px; margin: auto; display: block; border-radius: 15px; box-shadow: 0 0 0 15px rgba(255, 255, 255, 0.6); background: rgba(255, 255, 255, 0.1);">
+    <div class="carousel-inner" style="border-radius: 15px; overflow: hidden;">
         {% for movie in highlighted_movies %}
             <div class="carousel-item {% if forloop.first %}active{% endif %}">
                 <div style="width: 100%; aspect-ratio: 16 / 9; overflow: hidden;">
-                    <img
-                        src="{% if movie.extra_images.first %}{{ movie.extra_images.first.image.url }}{% else %}{{ movie.image.url }}{% endif %}"
-                        class="d-block w-100"
-                        alt="{{ movie.title }}"
-                        style="width: 100%; height: 100%; object-fit: cover;"
-                    >
+                    <!--  image-link-->
+                    <a href="{% url 'movie_detail' movie.id %}">
+                        <img
+                            src="{% if movie.extra_images.first %}{{ movie.extra_images.first.image.url }}{% else %}{{ movie.image.url }}{% endif %}"
+                            class="d-block w-100"
+                            alt="{{ movie.title }}"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                        >
+                    </a>
                 </div>
-                <div class="carousel-caption d-none d-md-block">
-                    <h5>{{ movie.title }}</h5>
-                    <p>{{ movie.description|truncatewords:15 }}</p>
+
+                <!-- background and naming -->
+                <div style="position: absolute; bottom: 0; width: 100%; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%); color: white; padding: 15px 10px;">
+                    <h5 style="margin: 0;">{{ movie.title }}</h5>
+                    <p style="margin: 0; font-size: 20px;">{{ movie.description|truncatewords:15 }}</p>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#highlightCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#highlightCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+        {% endfor %}
     </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#highlightCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#highlightCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
 
     <!-- Top Movies section -->
 <div class="container-fluid main-wrapper mt-5">
