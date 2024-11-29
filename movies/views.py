@@ -183,7 +183,8 @@ def write_or_edit_review(request, movie_id, review_id=None):
         # handling for updating/creating review
         form = ReviewForm(request.POST, instance=review)
         if form.is_valid():
-            if not created:
+            review = form.save(commit=False)
+            if created:
                 form.instance.updated_at = now()
                 form.instance.updated_by = request.user
             form.save()
