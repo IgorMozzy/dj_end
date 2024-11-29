@@ -38,11 +38,15 @@
 
             <!-- Authentication Section -->
             <div>
+                {% load custom_tags %}
                 {% if user.is_authenticated %}
                     <!-- username and logout button if user is logged in -->
                     <span class="me-2">
                         Hello, <a href="{% url 'user_profile' user.id %}" style="color: inherit;">{{ user.username }}!</a>
                     </span>
+                    {% if user|is_moderator %}
+                        <a href="{% url 'moderation_dashboard' %}" class="btn btn-warning me-2">Moderation</a>
+                    {% endif %}
                     <form method="post" action="{% url 'logout' %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-light me-2">Logout</button>

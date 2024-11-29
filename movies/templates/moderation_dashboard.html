@@ -3,7 +3,7 @@
 {% block title %}Moderation Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid main-wrapper mt-5">
     <h2 class="mb-4">Moderation Dashboard</h2>
     
     <!-- user list -->
@@ -63,6 +63,7 @@
                             <td>{{ review.text }}</td>
                             <td>{{ review.user.username }}</td>
                             <td>
+                                <a href="{% url 'edit_review' review.movie.id review.id %}" class="btn btn-sm btn-warning me-2" target="_blank">Edit</a>
                                 <a href="{% url 'delete_review' review.id %}" class="btn btn-sm btn-danger">Delete</a>
                             </td>
                         </tr>
