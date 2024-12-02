@@ -41,11 +41,14 @@
     {% if user.is_authenticated %}
         <div class="dropdown me-2">
             <button class="btn btn-outline-dark dropdown-toggle" type="button" id="rateDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                {% if user_rating %}
-                    <i class="bi bi-star-fill"></i> Rated: {{ user_rating }}/5
-                {% else %}
-                    <i class="bi bi-star"></i> Rate
-                {% endif %}
+                <i class="bi {% if user_rating %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                    <span id="rateDropdownText">
+                        {% if user_rating %}
+                            Rated: {{ user_rating }}/5
+                        {% else %}
+                             Rate
+                        {% endif %}
+                    </span>
             </button>
             <ul class="dropdown-menu p-3" aria-labelledby="rateDropdown" style="min-width: auto;">
                 <div id="starRating" class="d-flex justify-content-center">
@@ -57,9 +60,13 @@
         </div>
         <button class="btn btn-outline-dark me-2" id="favoriteButton">
             <i class="bi bi-bookmark"></i>
-            {% if is_favorite %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+            <span id="favoriteButtonText">
+                {% if is_favorite %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+            </span>
         </button>
-                <a href="{% url 'write_review' movie.id %}" class="btn btn-outline-dark">Write a Review</a>
+        <a href="{% url 'write_review' movie.id %}" class="btn btn-outline-dark">
+            <i class="bi bi-pencil me-1"></i> Write a Review
+        </a>
     {% else %}
         <p class="text-muted">You need to <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to rate or add this movie to favorites.</p>
     {% endif %}
@@ -69,9 +76,9 @@
     <div id="reviewsContainer">
     <!-- first review -->
     <div class="review mb-3">
-        <div class="card">
+        <div class="card bg-dark" style="--bs-bg-opacity: .2; border-style: groove; border-width: 1px">
             <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
+                <div style="margin-right: 10%;">
                     <p>{{ reviews.0.text|truncatewords:20 }}</p>
                 </div>
                 <div class="text-end">
@@ -83,7 +90,11 @@
                     </p>
                 {% if reviews.0.user == user or is_moderator %}
                     <div class="d-flex justify-content-end">
+                        {% if reviews.0.user == user %}
+                            <a href="{% url 'write_review' movie.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                        {% else %}
                         <a href="{% url 'edit_review' movie.id reviews.0.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                        {% endif %}
                         <a href="{% url 'delete_review' reviews.0.id %}" class="btn btn-sm btn-danger">Delete</a>
                     </div>
                 {% endif %}
@@ -96,7 +107,7 @@
     <div id="hiddenReviews" class="d-none">
         {% for review in reviews|slice:"1:" %}
             <div class="review mb-3">
-                <div class="card">
+                <div class="card bg-dark" style="--bs-bg-opacity: .2; border-style: groove; border-width: 1px">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <p>{{ review.text|truncatewords:20 }}</p>
@@ -110,7 +121,11 @@
                             </p>
                             {% if review.user == user or is_moderator %}
                                 <div class="d-flex justify-content-end">
-                                <a href="{% url 'edit_review' movie.id review.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                    {% if reviews.user == user %}
+                                        <a href="{% url 'write_review' movie.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                    {% else %}
+                                        <a href="{% url 'edit_review' movie.id review.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                    {% endif %}
                                 <a href="{% url 'delete_review' review.id %}" class="btn btn-sm btn-danger">Delete</a>
                                 </div>
                             {% endif %}
@@ -134,6 +149,21 @@
     </div>
 </div>
 
+<script>
+    document.getElementById('toggleReviewsButton')?.addEventListener('click', function () {
+        const hiddenReviews = document.getElementById('hiddenReviews');
+        const button = this;
+
+        if (hiddenReviews.classList.contains('d-none')) {
+            hiddenReviews.classList.remove('d-none');
+            button.textContent = 'Show less reviews';
+        } else {
+            hiddenReviews.classList.add('d-none');
+            button.textContent = 'Show more reviews';
+        }
+    });
+</script>
+
 <!-- fav-button cliks handling -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -143,9 +173,9 @@
             method: "GET",
             success: function(response) {
                 if (response.status === 'added') {
-                    $('#favoriteButton').text('Remove from Favorites');
+                    $('#favoriteButtonText').text('Remove from Favorites');
                 } else if (response.status === 'removed') {
-                    $('#favoriteButton').text('Add to Favorites');
+                    $('#favoriteButtonText').text('Add to Favorites');
                 }
             }
         });
@@ -178,7 +208,7 @@
 <!-- stars -->
 <script>
     const stars = document.querySelectorAll('#starRating .bi');
-    const rateButton = document.getElementById('rateDropdown');
+    const rateButton = document.getElementById('rateDropdownText');
     const ratingStatus = document.getElementById('ratingStatus');
 
     stars.forEach(star => {

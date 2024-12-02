@@ -32,6 +32,9 @@ class Movie(models.Model):
     def review_count(self):
         return self.reviews.count()
 
+    def __str__(self):
+        return self.title
+
 
 class MovieImage(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='extra_images')
@@ -49,6 +52,9 @@ class Review(models.Model):
     updated_at = models.DateTimeField(null=True, blank=True)
     updated_by = models.ForeignKey(User, related_name="updated_reviews", null=True, blank=True,
                                    on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.user.username}'s review for {self.movie.title}"
 
 
 class Rating(models.Model):

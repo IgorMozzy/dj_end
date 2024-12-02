@@ -51,7 +51,7 @@ def register(request):
             messages.success(request, 'Registration successful. You can now log in.')
             logger.info(f"User {user.username} registered successfully and assigned to 'Users' group.")
             login(request, user)
-            return redirect('user_detail', pk=user.pk)
+            return redirect('/')
         else:
             messages.error(request, 'Registration failed. Please correct the errors below.')
             logger.warning(f"Failed registration attempt. Errors: {form.errors}")

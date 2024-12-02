@@ -3,36 +3,87 @@
 {% block title %}Movie Catalog{% endblock %}
 
 {% block content %}
-<div class="container">
 <div class="container-fluid main-wrapper mt-5">
     <div class="row">
         <div class="mx-auto">
-            <!-- section header and sorting -->
+            <!-- Section header and sorting -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="mb-0">Movie Catalog</h3>
                 <form method="get" class="d-flex align-items-center">
-                    <!-- hidden field for search_query -->
+                    <!-- Hidden fields to preserve filter parameters -->
                     <input type="hidden" name="search" value="{{ search_query }}">
+                    <input type="hidden" name="rating_min" value="{{ request.GET.rating_min }}">
+                    <input type="hidden" name="rating_max" value="{{ request.GET.rating_max }}">
+                    <input type="hidden" name="year_min" value="{{ request.GET.year_min }}">
+                    <input type="hidden" name="year_max" value="{{ request.GET.year_max }}">
+                    {% for genre in selected_genres %}
+                        <input type="hidden" name="genres" value="{{ genre }}">
+                    {% endfor %}
 
                     <label class="me-2 mb-0">Sort by:</label>
                     <select name="sort" class="form-select me-2" onchange="this.form.submit()">
-                        <option value="title" {% if sort_option == 'title' %} selected {% endif %}>Title</option>
-                        <option value="rating" {% if sort_option == 'rating' %} selected {% endif %}>Rating</option>
-                        <option value="year" {% if sort_option == 'year' %} selected {% endif %}>Year</option>
+                        <option value="title" {% if sort_option == 'title' %}selected{% endif %}>Title</option>
+                        <option value="rating" {% if sort_option == 'rating' %}selected{% endif %}>Rating</option>
+                        <option value="year" {% if sort_option == 'year' %}selected{% endif %}>Year</option>
                     </select>
                     <button
                         type="submit"
                         name="order"
                         value="{% if sort_order == 'asc' %}desc{% else %}asc{% endif %}"
-                        class="btn btn-outline-secondary">
+                        class="btn btn-outline-secondary me-2">
                         {% if sort_order == 'asc' %}
                             ↑
                         {% else %}
                             ↓
                         {% endif %}
                     </button>
+                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="{% if rating_min or rating_max or year_min or year_max or selected_genres %}true{% else %}false{% endif %}" aria-controls="filterCollapse">
+                        Filters
+                    </button>
                 </form>
             </div>
+
+            <!-- Filters block -->
+            <div class="collapse {% if rating_min or rating_max or year_min or year_max or selected_genres %}show{% endif %}" id="filterCollapse">
+                <form method="get" class="row mb-4">
+                    <!-- Hidden fields to preserve sort parameters -->
+                    <input type="hidden" name="search" value="{{ search_query }}">
+                    <input type="hidden" name="sort" value="{{ sort_option }}">
+                    <input type="hidden" name="order" value="{{ sort_order }}">
+
+                    <div class="col-md-3">
+                        <label for="rating_min" class="form-label">Rating (from):</label>
+                        <input type="number" step="0.1" min="0" max="5" class="form-control" id="rating_min" name="rating_min" value="{{ request.GET.rating_min }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="rating_max" class="form-label">Rating (to):</label>
+                        <input type="number" step="0.1" min="0" max="5" class="form-control" id="rating_max" name="rating_max" value="{{ request.GET.rating_max }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="year_min" class="form-label">Year (from):</label>
+                        <input type="number" min="1900" max="2100" class="form-control" id="year_min" name="year_min" value="{{ request.GET.year_min }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="year_max" class="form-label">Year (to):</label>
+                        <input type="number" min="1900" max="2100" class="form-control" id="year_max" name="year_max" value="{{ request.GET.year_max }}">
+                    </div>
+                    <div class="col-md-6 mt-3">
+                        <label for="genres" class="form-label">Genres (any of selected):</label>
+                        <select id="genres" name="genres" class="form-select" multiple>
+                            {% for genre in all_genres %}
+                            <option value="{{ genre.id }}" {% if genre.id|stringformat:"s" in selected_genres %}selected{% endif %}>
+                                {{ genre.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end mt-3">
+                        <button type="submit" class="btn btn-secondary w-100">Filter</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Movie list -->
             <div class="movie-list" style="max-height: 70vh; overflow-y: auto; scrollbar-width: none;">
                 {% for movie in movies %}
                     <div class="d-flex align-items-center border-bottom py-3">
@@ -61,7 +112,6 @@
                             <p class="text-muted mb-1 small">Rating: {{ movie.average_rating|default:"N/A" }}</p>
                         </div>
                         <div class="ms-auto">
-                            <!-- stars -->
                             <div class="d-flex">
                                 {% for i in "12345" %}
                                     <span
@@ -80,5 +130,4 @@
         </div>
     </div>
 </div>
-    </div>
 {% endblock %}

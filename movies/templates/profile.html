@@ -4,50 +4,115 @@
 
 {% block content %}
 <div class="container-fluid main-wrapper mt-5">
-<div class="container mt-4">
-    <h2 class="mb-4">{{ profile_user.username }}'s Profile</h2>
-
-    <!-- user info section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Profile Information</h5>
+    <div class="container mt-4">
+        <!-- user info section -->
+        <h2 class="mb-4">{{ profile_user.username }}'s Profile</h2>
+        <div class="container-fluid main-wrapper mt-3">
             <p><strong>Username:</strong> {{ profile_user.username }}</p>
             <p><strong>Email:</strong> {{ profile_user.email }}</p>
             <p><strong>Date Joined:</strong> {{ profile_user.date_joined|date:"F j, Y" }}</p>
+            <a href="{% url 'user_detail' profile_user.id %}" class="text-decoration-none">Edit</a>
         </div>
+
+
+        <!-- reviews history -->
+    <div class="container-fluid main-wrapper mt-3">
+        <h5 class="card-title">Review History</h5>
+        {% for review in reviews %}
+            <div class="mb-3">
+                <h6><a href="{% url 'movie_detail' review.movie.id %}">{{ review.movie.title }}</a><p class="text-muted">Posted on {{ review.created_at|date:"F j, Y" }}</p></h6>
+                <p>{{ review.text }}</p>
+
+            </div>
+        {% empty %}
+            <p>No reviews found.</p>
+        {% endfor %}
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination">
+                {% if reviews.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?review_page={{ reviews.previous_page_number }}&rating_page={{ ratings.number }}&favorite_page={{ favorites.number }}">Previous</a>
+                    </li>
+                {% endif %}
+                {% for num in reviews.paginator.page_range %}
+                    <li class="page-item {% if reviews.number == num %}active{% endif %}">
+                        <a class="page-link" href="?review_page={{ num }}&rating_page={{ ratings.number }}&favorite_page={{ favorites.number }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if reviews.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?review_page={{ reviews.next_page_number }}&rating_page={{ ratings.number }}&favorite_page={{ favorites.number }}">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 
-    <!-- reviews history -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Review History</h5>
-            {% for review in reviews %}
-                <div class="mb-3">
-                    <h6><a href="{% url 'movie_detail' review.movie.id %}">{{ review.movie.title }}</a></h6>
-                    <p>{{ review.text }}</p>
-                    <p class="text-muted">Posted on {{ review.created_at|date:"F j, Y" }}</p>
-                </div>
-            {% empty %}
-                <p>No reviews found.</p>
-            {% endfor %}
-        </div>
-    </div>
+        <!-- ratings history -->
+        <div class="container-fluid main-wrapper mt-3">
+                <h5 class="card-title">Rating History</h5>
+                {% for rating in ratings %}
+                    <div class="mb-3">
+                        <h6><a href="{% url 'movie_detail' rating.movie.id %}">{{ rating.movie.title }}</a><p>Rating: {{ rating.value }}/5</p></h6>
 
-    <!-- Rates history -->
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Rating History</h5>
-            {% for rating in ratings %}
-                <div class="mb-3">
-                    <h6><a href="{% url 'movie_detail' rating.movie.id %}">{{ rating.movie.title }}</a></h6>
-                    <p>Rating: {{ rating.value }}/5</p>
-                    <p class="text-muted">Rated on {{ rating.created_at|date:"F j, Y" }}</p>
-                </div>
-            {% empty %}
-                <p>No ratings found.</p>
-            {% endfor %}
+                    </div>
+                {% empty %}
+                    <p>No ratings found.</p>
+                {% endfor %}
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination">
+                        {% if ratings.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?rating_page={{ ratings.previous_page_number }}&review_page={{ reviews.number }}&favorite_page={{ favorites.number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in ratings.paginator.page_range %}
+                            <li class="page-item {% if ratings.number == num %}active{% endif %}">
+                                <a class="page-link" href="?rating_page={{ num }}&review_page={{ reviews.number }}&favorite_page={{ favorites.number }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if ratings.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?rating_page={{ ratings.next_page_number }}&review_page={{ reviews.number }}&favorite_page={{ favorites.number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+
+        <!-- favorites section -->
+        <div class="container-fluid main-wrapper mt-3">
+                <h5 class="card-title">Favorite Movies</h5>
+                {% for movie in favorites %}
+                    <div class="mb-3">
+                        <h6><a href="{% url 'movie_detail' movie.id %}">{{ movie.title }}</a></h6>
+                    </div>
+                {% empty %}
+                    <p>No favorite movies found.</p>
+                {% endfor %}
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination">
+                        {% if favorites.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?favorite_page={{ favorites.previous_page_number }}&review_page={{ reviews.number }}&rating_page={{ ratings.number }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        {% for num in favorites.paginator.page_range %}
+                            <li class="page-item {% if favorites.number == num %}active{% endif %}">
+                                <a class="page-link" href="?favorite_page={{ num }}&review_page={{ reviews.number }}&rating_page={{ ratings.number }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if favorites.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?favorite_page={{ favorites.next_page_number }}&review_page={{ reviews.number }}&rating_page={{ ratings.number }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
-    </div>
-</div>
 {% endblock %}

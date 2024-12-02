@@ -24,7 +24,7 @@
                 <!-- background and naming -->
                 <div style="position: absolute; bottom: 0; width: 100%; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%); color: white; padding: 15px 10px;">
                     <h5 style="margin: 0;">{{ movie.title }}</h5>
-                    <p style="margin: 0; font-size: 20px;">{{ movie.description|truncatewords:15 }}</p>
+                    <p class="description" style="margin: 0; font-size: 20px;">{{ movie.description|truncatewords:15 }}</p>
                 </div>
             </div>
         {% endfor %}
@@ -49,11 +49,14 @@
                     <div class="card h-100">
                         {% if movie.image %}
                             <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="card-img-top" style="height: auto; aspect-ratio: 2 / 3; object-fit: cover;" />
-
                         {% else %}
                             <img src="https://via.placeholder.com/225x400?text=No+Image" class="card-img-top" alt="Image not available" style="height: auto; aspect-ratio: 9 / 16; object-fit: cover;">
                         {% endif %}
-
+                        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-end align-items-end">
+                        <span class="text-white fw-bold bg-dark bg-gradient px-3 py-2 rounded-3" style="--bs-bg-opacity: .3; margin-bottom: 4%;">
+                                {{ movie.average_rating|default:"N/A" }}
+                        </span>>
+                            </div>
                     </div>
                 </a>
             </div>

@@ -2,6 +2,7 @@
 .venv/
 backups/
 /logs
+/htmlcov
 .env
 .coverage
 db.sqlite3
