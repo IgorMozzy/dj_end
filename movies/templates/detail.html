@@ -121,7 +121,7 @@
                             </p>
                             {% if review.user == user or is_moderator %}
                                 <div class="d-flex justify-content-end">
-                                    {% if reviews.user == user %}
+                                    {% if review.user == user %}
                                         <a href="{% url 'write_review' movie.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
                                     {% else %}
                                         <a href="{% url 'edit_review' movie.id review.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
