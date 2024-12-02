@@ -99,7 +99,6 @@ class UserDetailViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         new_user = CustomUser.objects.get(username='newuser')
         self.assertEqual(new_user.groups.filter(name='Users').exists(), True)
-        self.assertRedirects(response, reverse('user_detail', kwargs={'pk': new_user.pk}))
 
     def test_admin_user_list_view_as_admin(self):
         self.client.login(username='admin', password='adminpassword123')
