@@ -80,6 +80,9 @@ services:
 
 networks:
   skynet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
   private:
 
 volumes:
