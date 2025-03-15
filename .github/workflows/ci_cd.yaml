@@ -91,7 +91,7 @@ jobs:
 
             REPO_URL="git@github.com:${GITHUB_REPOSITORY}.git"
             REPO_NAME=$(basename -s .git "$REPO_URL")
-            REPO_BRANCH="$GITHUB_REF_NAME"
+            REPO_BRANCH="dev"
 
             # Clone or update repo from GitHub
             if [ -d "$HOME/$REPO_NAME" ]; then
