@@ -89,12 +89,12 @@ jobs:
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            REPO_URL="git@github.com:IgorMozzy/dj_end.git"
+            REPO_URL="git@github.com:${GITHUB_REPOSITORY}.git"
             REPO_NAME=$(basename -s .git "$REPO_URL")
-            REPO_BRANCH="dev"
+            REPO_BRANCH="$GITHUB_REF_NAME"
 
             # Clone or update repo from GitHub
-            if [ -d "/$HOME/$REPO_NAME" ]; then
+            if [ -d "$HOME/$REPO_NAME" ]; then
               echo "Directory exists. Pulling latest changes..."
               cd "/home/$USER/$REPO_NAME" || { echo "Failed to change directory"; exit 1; }
               git pull origin $REPO_BRANCH || { echo "Failed to pull latest changes"; exit 1; }
