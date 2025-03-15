@@ -89,19 +89,19 @@ jobs:
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            REPO_URL="git@github.com:${GITHUB_REPOSITORY}.git"
+            REPO_URL="git@github.com:IgorMozzy/dj_end.git"
             REPO_NAME=$(basename -s .git "$REPO_URL")
             REPO_BRANCH="dev"
 
             # Clone or update repo from GitHub
-            if [ -d "$HOME/$REPO_NAME" ]; then
+            if [ -d "/$HOME/$REPO_NAME" ]; then
               echo "Directory exists. Pulling latest changes..."
-              cd "/home/$USER/$REPO_NAME" || { echo "Failed to change directory"; exit 1; }
+              cd "/$HOME/$REPO_NAME" || { echo "Failed to change directory"; exit 1; }
               git pull origin $REPO_BRANCH || { echo "Failed to pull latest changes"; exit 1; }
             else
               echo "Directory does not exist. Cloning repository..."
-              git clone -b $REPO_BRANCH "$REPO_URL" "/home/$USER/$REPO_NAME" || { echo "Failed to clone repository"; exit 1; }
-              cd "/home/$USER/$REPO_NAME" || { echo "Failed to change directory after cloning"; exit 1; }
+              git clone -b $REPO_BRANCH "$REPO_URL" "/$HOME/$REPO_NAME" || { echo "Failed to clone repository"; exit 1; }
+              cd "/$HOME/$REPO_NAME" || { echo "Failed to change directory after cloning"; exit 1; }
             fi
             
             # Check if .env file or copy it from .env.sample
