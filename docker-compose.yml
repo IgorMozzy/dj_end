@@ -80,6 +80,7 @@ services:
 
 networks:
   skynet:
+    # configuration for very specific environment
     driver: bridge
     driver_opts:
       com.docker.network.driver.mtu: 1450
