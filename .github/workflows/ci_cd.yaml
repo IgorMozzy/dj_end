@@ -89,7 +89,7 @@ jobs:
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            REPO_URL="git@github.com:${GITHUB_REPOSITORY}.git"
+            REPO_URL="$REPO_ADDRESS"
             REPO_NAME=$(basename -s .git "$REPO_URL")
             REPO_BRANCH="dev"
 
