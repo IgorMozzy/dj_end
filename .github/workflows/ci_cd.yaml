@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - dev # temporary
   workflow_dispatch:  # manual test from GitHub Actions
 
 jobs:
@@ -91,7 +90,7 @@ jobs:
 
             REPO_URL="git@github.com:IgorMozzy/dj_end.git"
             REPO_NAME=$(basename -s .git "$REPO_URL")
-            REPO_BRANCH="dev"
+            REPO_BRANCH="main"
 
             # Clone or update repo from GitHub
             if [ -d "/$HOME/$REPO_NAME" ]; then
