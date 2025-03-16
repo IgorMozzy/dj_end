@@ -1,5 +1,5 @@
-# BB Итоговый проект
-The project is a Django based website with a list of movies. It includes functionality for free viewing of all data and possibility to register your own profile:
+# BangBang course final project
+The project is a Django based website with a list of movies, their ratings and reviews added by other users. It includes functionality for free viewing of all data and possibility to register your own profile:
 * Administrators: Adding new movies.
 * Users: Viewing movie details, rating, and reviewing them.
 * Moderators: Editing or deleting reviews.
@@ -32,7 +32,7 @@ See `/docs` for more examples.
 2. **API** – DRF endpoints for user management (creation, deletion, obtaining JWT tokens). Currently, only user and group management is supported, but not movies.
 3. **Movies** – The main application, including models for working with the movie database and Django templates for rendering.
 
-### User Management
+### 👤 User Management
 The is_staff system role is considered the main indicator of an administrator. The Admins and Users groups can be used to restrict access to views.
 
 `/a/users/` - default route for simple user management.
@@ -77,7 +77,7 @@ API Documentation:
 #  API schema in JSON format
 /swagger.json
 ```
-## Deployment
+## 🏗️ Deployment
 ### Development environment
 1. Clone the repository:
 ```
@@ -113,11 +113,13 @@ docker compose up -d --build
 docker compose exec web bash
 python3 manage.py createsuperuser
 ```
-13. If you need to populate the database with test data, you can use the following command:
+### Feed the database with test data
+If you need to populate the database with test data, you can use the following command:
 ```commandline
 # runs the script located at movies/management/seed_data.py
 python manage.py seed_data
 ```
+#### Misc
 Here are some example commands used in the process:
 ```
 # Copying keys using scp
