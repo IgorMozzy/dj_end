@@ -84,6 +84,7 @@ API Documentation:
 /swagger.json
 ```
 ## 🏗️ Deployment
+**For production and test installations, you must have docker and docker compose installed.**
 ### Development environment
 1. Clone the repository:
 ```
