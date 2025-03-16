@@ -4,7 +4,13 @@ The project is a Django based website with a list of movies, their ratings and r
 * Users: Viewing movie details, rating, and reviewing them.
 * Moderators: Editing or deleting reviews.
 
+Main page:
+
 ![Example](/docs/ex1.webp)
+
+Detailed page:
+
+![DetExample](/docs/ex3.webp)
 
 See `/docs` for more examples.
 ## ⚙️ Used techs:
