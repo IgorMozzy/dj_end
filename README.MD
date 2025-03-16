@@ -21,6 +21,7 @@ See `/docs` for more examples.
 ├── api/              # API handling app
 ├── certs/            # Predefined path to certificates
 ├── conf/             # Django configuration
+├── docs/             # Project info and interface examples
 ├── movies/           # Main app: models, logic, HTML-templates
 ├── nginx/            # basic nginx configuration
 └── users/            # Users managment app
