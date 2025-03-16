@@ -122,7 +122,7 @@ python3 manage.py createsuperuser
 ```
 ### Feed the database with test data
 If you need to populate the database with test data, you can use the following command:
-```commandline
+```
 # runs the script located at movies/management/seed_data.py
 python manage.py seed_data
 ```
